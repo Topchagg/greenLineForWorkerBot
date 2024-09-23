@@ -35,8 +35,7 @@ dp = Dispatcher()
 bot = Bot(token=botToken, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 
 
-# -> API bots ACTIONS
-
+# -> ApiBots actions
 @dp.message(Command(commands=["nearestTask"]))
 async def nearestTaskHandler(message: Message) -> None:
     try:
@@ -58,28 +57,15 @@ async def sendNewOrderToCleanerMessage():
     try:
         await bot.send_message(NewOrderMessage(data))
         return json.dumps({
-            "status":"HTTP_200_OK",
+            "status":"200",
             "response":f"Message was sended to {userName}"
         })
     except Exception as e:
         return json.dumps({
-            "status":"something went wrong",
+            "status":"500"
         })
 
-@app.route("/check",methods=["GET"])
-def check():
-    return "Is working"
 
-
-
-# -> BOTS ACTIONS
-
-@dp.message(CommandStart())
-async def startMessage(message:Message):
-    try:
-        await bot.send_message(message.chat.id,startMessage())
-    except Exception as e:
-        pass
 
 @dp.message(Command(commands=["changeAccount"]))
 async def changeAccountMessage(data):
@@ -87,16 +73,26 @@ async def changeAccountMessage(data):
 
     try:
         await bot.send_message(changeAccountMessage(codeToReset))
+
     except Exception as e:
         return json.dumps({
-            "status":"Something went wrong"
+            "status":"500"
         })
 
+# -> Raw bots actions
+@dp.message(CommandStart())
+async def startMessage(message:Message):
+    try:
+        await bot.send_message(message.chat.id,"Welcome")
+    except Exception as e:
+        pass
 
 
 
 async def main():
     await dp.start_polling(bot)
+
+
 
 if __name__ == "__main__":
     asyncio.run(main())
